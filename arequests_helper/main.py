@@ -4,7 +4,7 @@ import json
 
 
 
-class REQUEST_MANAGER:
+class AREQUEST_MANAGER:
     def __init__(self,BOT_API,ADMIN_ID):
         self.bot_api = BOT_API
         self.admin_id = ADMIN_ID
