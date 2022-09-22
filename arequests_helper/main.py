@@ -12,8 +12,9 @@ class AREQUEST_MANAGER:
 
 
     async def get_json_post(self,client: aiohttp.ClientSession, url: str,data, proxy) -> dict:
+        data = json.dumps(data) if data != None else None
         if proxy == None: 
-            async with client.request('post', url, data = json.dumps(data), ssl=False) as response:
+            async with client.request('post', url, data = data, ssl=False) as response:
                 try: 
                     response.raise_for_status()
                 except aiohttp.client_exceptions.ClientResponseError:
@@ -21,7 +22,7 @@ class AREQUEST_MANAGER:
                     return 'ClientResponseError'
                 return await response.json(content_type=None)
         else: 
-            async with client.request('post', url, data = json.dumps(data),proxy=proxy[0], proxy_auth=proxy[1], ssl=False) as response:
+            async with client.request('post', url, data = data,proxy=proxy[0], proxy_auth=proxy[1], ssl=False) as response:
                 try: 
                     response.raise_for_status()
                 except aiohttp.client_exceptions.ClientResponseError:
