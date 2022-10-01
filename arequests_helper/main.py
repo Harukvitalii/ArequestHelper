@@ -1,6 +1,8 @@
 import aiohttp
 import requests
 import json
+import asyncio
+import time
 
 
 
@@ -56,3 +58,25 @@ class AREQUEST_MANAGER:
                     "text":text}
         r = requests.get(url = URL, params = PARAMS,verify=False)
         return r
+    
+    
+    def run_function_with_exception(self, func, func_args, start_abr_for_notification: str, tries: int = 10):
+        counter = 1
+        while counter != tries:
+            try: 
+                asyncio.run(func(func_args))
+
+            except KeyError:
+                print('Login Please') 
+            except aiohttp.client_exceptions.ClientOSError:
+                print('-------------------------------------------EROR Winodws closed connection-------------------------------------------')
+                time.sleep(20)
+                asyncio.run(func(func_args))
+                tries += 1
+            except Exception as err:
+                print(err)
+                print('-------------------------------------------EROR-------------------------------------------')
+                self.bot_notify_normal(f'STEPN BNB ERROR {err}')
+                asyncio.run(func(func_args))
+                tries += 1
+
