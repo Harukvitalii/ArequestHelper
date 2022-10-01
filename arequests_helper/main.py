@@ -60,7 +60,7 @@ class AREQUEST_MANAGER:
         return r
     
     
-    def run_function_with_exception(self, func, func_args, start_abr_for_notification: str, tries: int = 10):
+    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args,  tries: int = 10):
         counter = 1
         while counter != tries:
             try: 
