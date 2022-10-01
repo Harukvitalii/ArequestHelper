@@ -35,7 +35,7 @@ class AREQUEST_MANAGER:
 
     async def get_json_get(self,client: aiohttp.ClientSession, url: str,proxy) -> dict:
         if proxy == None: 
-            async with client.request('GET', url,ssl=False,timeout=self.timeout_seconds) as response:
+            async with client.request('GET', url,ssl=False,timeout=30) as response:
                 response.raise_for_status()
                 return await response.json(content_type=None)
         else: 
