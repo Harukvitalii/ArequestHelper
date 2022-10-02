@@ -60,9 +60,8 @@ class AREQUEST_MANAGER:
         return r
     
     
-    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10):
-        counter = 1
-        while counter != tries:
+    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10,attempt = 1):
+        while attempt != tries:
             try: 
                 asyncio.run(func(func_args))
 
@@ -72,14 +71,15 @@ class AREQUEST_MANAGER:
 
             except aiohttp.client_exceptions.ClientOSError:
                 print('-------------------------------------------EROR Winodws closed connection-------------------------------------------')
-                time.sleep(20)
-                asyncio.run(func(func_args))
-                tries += 1
-                self.bot_notify_normal(f'{start_abr_for_notification} ERROR Winodws closed connection')
+                time.sleep(10)
+                self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
+                self.bot_notify_normal(f'{start_abr_for_notification} ERROR Winodws closed connection\nAttempt {attempt+1}')
             except Exception as err:
                 print(err)
                 print('-------------------------------------------EROR-------------------------------------------')
-                self.bot_notify_normal(f'{start_abr_for_notification} ERROR {err}')
-                asyncio.run(func(func_args))
-                tries += 1
+                time.sleep(10)
+                self.bot_notify_normal(f'{start_abr_for_notification} ERROR {err}\nAttempt {attempt+1}')
+                self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
+        
+        self.bot_notify_normal(f'{start_abr_for_notification} RESTART')
 
