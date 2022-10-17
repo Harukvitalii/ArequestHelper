@@ -60,7 +60,13 @@ class AREQUEST_MANAGER:
         return r
     
     
-    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10,attempt = 1):
+    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10,attempt = 1, otladka: bool = False):
+        if otladka:
+            asyncio.run(func(func_args))
+            print('done Success')
+            exit()
+            
+            
         while attempt != tries:
             try: 
                 asyncio.run(func(func_args))
@@ -82,4 +88,5 @@ class AREQUEST_MANAGER:
                 self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
         
         self.bot_notify_normal(f'{start_abr_for_notification} RESTART')
+
 
