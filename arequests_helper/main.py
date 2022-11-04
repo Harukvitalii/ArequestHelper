@@ -60,6 +60,14 @@ class AREQUEST_MANAGER:
         return r
     
     
+    def bot_report(self,text, BOT_TOKEN):
+        URL = 'https://api.telegram.org/bot' + BOT_TOKEN +'/sendMessage'
+        PARAMS = {'chat_id':self.admin_id,
+                    "text":text}
+        r = requests.get(url = URL, params = PARAMS,verify=False)
+        return r
+    
+    
     def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10,attempt = 1, otladka: bool = False):
         if otladka:
             asyncio.run(func(func_args))
