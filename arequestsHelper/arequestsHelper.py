@@ -4,6 +4,7 @@ import json
 import asyncio
 import time
 import ignore
+from errors import errs
 
 
 
@@ -85,13 +86,13 @@ class AREQUEST_MANAGER:
                 self.bot_notify_normal(f'{start_abr_for_notification} ERROR Login Please')
 
             except aiohttp.client_exceptions.ClientOSError:
-                print('-------------------------------------------EROR Winodws closed connection-------------------------------------------')
+                print(errs['System ERROR'])
                 time.sleep(10)
                 self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
                 self.bot_notify_normal(f'{start_abr_for_notification} ERROR Winodws closed connection\nAttempt {attempt+1}')
             except Exception as err:
                 print(err)
-                print('-------------------------------------------EROR-------------------------------------------')
+                print(errs['ERROR'])
                 time.sleep(10)
                 self.bot_notify_normal(f'{start_abr_for_notification} ERROR {err}\nAttempt {attempt+1}')
                 self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
