@@ -3,8 +3,10 @@ import requests
 import json
 import asyncio
 import time
-import ignore
 from errors import errs
+
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 
