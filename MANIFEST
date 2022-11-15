@@ -4,4 +4,3 @@ setup.py
 arequestsHelper/__init__.py
 arequestsHelper/arequestsHelper.py
 arequestsHelper/errors.py
-arequestsHelper/ignore.py
