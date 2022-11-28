@@ -21,33 +21,30 @@ class AREQUEST_MANAGER:
         data = json.dumps(data) if data != None else None
         if proxy == None: 
             async with client.request('post', url, data = data, ssl=False) as response:
-                try: 
-                    response.raise_for_status()
-                except aiohttp.client_exceptions.ClientResponseError:
-                    print(response)
-                    return 'ClientResponseError'
-                return await response.json(content_type=None)
+                return await self.errors_catcher(response)
         else: 
             async with client.request('post', url, data = data,proxy=proxy[0], proxy_auth=proxy[1], ssl=False) as response:
-                try: 
-                    response.raise_for_status()
-                except aiohttp.client_exceptions.ClientResponseError:
-                    print(response)
-                    return 'ClientResponseError'
-                return await response.json(content_type=None)
+                return await self.errors_catcher(response)
 
 
     async def get_json_get(self,client: aiohttp.ClientSession, url: str,proxy) -> dict:
         if proxy == None: 
             async with client.request('GET', url,ssl=False,timeout=30) as response:
-                response.raise_for_status()
-                return await response.json(content_type=None)
+                return await self.errors_catcher(response)
         else: 
             async with client.request('GET', url,proxy=proxy[0], proxy_auth=proxy[1],ssl=False,timeout=30) as response:
-                response.raise_for_status()
-                return await response.json(content_type=None)
+                return await self.errors_catcher(response)
         
 
+    async def errors_catcher(response): 
+        try: 
+            response.raise_for_status()
+        except aiohttp.client_exceptions.ClientResponseError:
+            return 'ClientResponseError'
+        except aiohttp.client_exceptions.ClientProxyConnectionError: 
+            return "ClientProxyConnectionError"
+        return await response.json(content_type=None)
+    
 
     async def bot_notify(self,text):
         URL = 'https://api.telegram.org/bot' + self.bot_api +'/sendMessage'
