@@ -38,13 +38,16 @@ class AREQUEST_MANAGER:
 
     async def errors_catcher(self,response): 
         content_type = response.headers['Content-Type']
+        resp = await response.json(content_type=None)
         try: 
             response.raise_for_status()
         except aiohttp.client_exceptions.ClientResponseError:
             print(response)
-            return 'ClientResponseError'
+            return {"clientResponseError": resp}
         except aiohttp.client_exceptions.ClientProxyConnectionError: 
-            return "ClientProxyConnectionError"
+            return {"ClientProxyConnectionError":resp}
+        except Exception as err: 
+            return{ err:resp}
         
         if 'text' in content_type: 
             return await response.text()
