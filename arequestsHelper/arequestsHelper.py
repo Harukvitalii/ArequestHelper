@@ -38,7 +38,15 @@ class AREQUEST_MANAGER:
 
     async def errors_catcher(self,response): 
         content_type = response.headers['Content-Type']
-        resp = await response.json(content_type=None)
+        print(content_type)
+        # print(response)
+        try: 
+            resp = await response.json(content_type=None)
+        except: 
+            try: 
+                resp = await response.text()
+            except:
+                resp = 'unable to decode response'
         try: 
             response.raise_for_status()
         except aiohttp.client_exceptions.ClientResponseError:
