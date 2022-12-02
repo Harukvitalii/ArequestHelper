@@ -38,7 +38,6 @@ class AREQUEST_MANAGER:
 
     async def errors_catcher(self,response): 
         content_type = response.headers['Content-Type']
-        print(content_type)
         # print(response)
         try: 
             resp = await response.json(content_type=None)
@@ -53,6 +52,7 @@ class AREQUEST_MANAGER:
             print(response)
             return {"clientResponseError": resp}
         except aiohttp.client_exceptions.ClientProxyConnectionError: 
+            print(response)
             return {"ClientProxyConnectionError":resp}
         except Exception as err: 
             return{ err:resp}
