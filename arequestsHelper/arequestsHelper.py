@@ -38,7 +38,7 @@ class AREQUEST_MANAGER:
 
     async def errors_catcher(self,response, force_json = False): 
         content_type = response.headers['Content-Type']
-        print(content_type)
+        # print(content_type)
         # print(response)
         try: 
             resp = await response.json(content_type=None)
