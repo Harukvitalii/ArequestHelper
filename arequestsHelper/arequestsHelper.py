@@ -17,27 +17,28 @@ class AREQUEST_MANAGER:
         pass
 
 
-    async def get_json_post(self,client: aiohttp.ClientSession, url: str,data, proxy) -> dict:
+    async def get_json_post(self,client: aiohttp.ClientSession, url: str,data, proxy,force_json = False) -> dict:
         data = json.dumps(data) if data != None else None
         if proxy == None: 
             async with client.request('post', url, data = data, ssl=False) as response:
-                return await self.errors_catcher(response)
+                return await self.errors_catcher(response, force_json)
         else: 
             async with client.request('post', url, data = data,proxy=proxy[0], proxy_auth=proxy[1], ssl=False) as response:
-                return await self.errors_catcher(response)
+                return await self.errors_catcher(response, force_json)
 
 
-    async def get_json_get(self,client: aiohttp.ClientSession, url: str,proxy) -> dict:
+    async def get_json_get(self,client: aiohttp.ClientSession, url: str,proxy,force_json = False) -> dict:
         if proxy == None: 
             async with client.request('GET', url,ssl=False,timeout=30) as response:
-                return await self.errors_catcher(response)
+                return await self.errors_catcher(response, force_json)
         else: 
             async with client.request('GET', url,proxy=proxy[0], proxy_auth=proxy[1],ssl=False,timeout=30) as response:
-                return await self.errors_catcher(response)
+                return await self.errors_catcher(response, force_json)
         
 
-    async def errors_catcher(self,response): 
+    async def errors_catcher(self,response, force_json = False): 
         content_type = response.headers['Content-Type']
+        print(content_type)
         # print(response)
         try: 
             resp = await response.json(content_type=None)
@@ -58,6 +59,9 @@ class AREQUEST_MANAGER:
             return{ err:resp}
         
         if 'text' in content_type: 
+            if force_json:
+                json_obj = json.loads(await response.text())
+                return json_obj
             return await response.text()
         else: 
             return await response.json(content_type=None)
