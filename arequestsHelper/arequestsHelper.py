@@ -1,6 +1,7 @@
 import aiohttp
 import requests
 import json
+import sys,os
 import asyncio
 import time
 from .errors import errs
@@ -38,7 +39,6 @@ class AREQUEST_MANAGER:
 
     async def errors_catcher(self,response, force_json = False): 
         content_type = response.headers['Content-Type']
-        # print(content_type)
         # print(response)
         try: 
             resp = await response.json(content_type=None)
@@ -110,11 +110,15 @@ class AREQUEST_MANAGER:
                 time.sleep(10)
                 self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
                 self.bot_notify_normal(f'{start_abr_for_notification} ERROR Winodws closed connection\nAttempt {attempt+1}')
-            except Exception as err:
-                print(err)
-                print(errs['ERROR'])
+            except Exception as e:
+                print(e)
+                # print(errs['ERROR'])
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
                 time.sleep(10)
-                self.bot_notify_normal(f'{start_abr_for_notification} ERROR {err}\nAttempt {attempt+1}')
+                self.bot_notify_normal(f'{exc_type}, {fname}, { exc_tb.tb_lineno}')
+                self.bot_notify_normal(f'{start_abr_for_notification} ERROR {e}\nAttempt {attempt+1}')
                 self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
         
         self.bot_notify_normal(f'{start_abr_for_notification} RESTART')
