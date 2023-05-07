@@ -97,19 +97,10 @@ class AREQUEST_MANAGER:
             exit()
             
             
-        while attempt != tries:
+        while True:
             try: 
                 asyncio.run(func(func_args))
-
-            except KeyError:
-                print('Login Please') 
-                self.bot_notify_normal(f'{start_abr_for_notification} ERROR Login Please')
-
-            except aiohttp.client_exceptions.ClientOSError:
-                print(errs['System ERROR'])
-                time.sleep(10)
-                self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
-                self.bot_notify_normal(f'{start_abr_for_notification} ERROR Winodws closed connection\nAttempt {attempt+1}')
+                
             except Exception as e:
                 print(e)
                 # print(errs['ERROR'])
