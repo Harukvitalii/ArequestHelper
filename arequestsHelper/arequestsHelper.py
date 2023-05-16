@@ -5,6 +5,7 @@ import sys,os
 import asyncio
 import time
 from .errors import errs
+import traceback
 
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -90,28 +91,38 @@ class AREQUEST_MANAGER:
         return r
     
     
-    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10,attempt = 1, otladka: bool = False):
+    def run_function_with_exception(self, func, start_abr_for_notification: str, func_args = (),  tries: int = 10,attempt = 1, otladka: bool = False, error_trace = False):
         if otladka:
             asyncio.run(func(func_args))
-            print('done Success')
+            print('test Run successfully')
             exit()
             
             
-        while True:
+        while attempt != tries:
             try: 
                 asyncio.run(func(func_args))
                 
+            except aiohttp.client_exceptions.ClientOSError:
+                print(errs['System ERROR'])
+                time.sleep(10)
+                self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
+                self.bot_notify_normal(f'{start_abr_for_notification} ERROR Winodws closed connection\nAttempt {attempt+1}')
             except Exception as e:
                 print(e)
-                # print(errs['ERROR'])
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
-                time.sleep(10)
-                self.bot_notify_normal(f'{exc_type}, {fname}, { exc_tb.tb_lineno}')
-                self.bot_notify_normal(f'{start_abr_for_notification} ERROR {e}\nAttempt {attempt+1}')
-                self.run_function_with_exception(func,start_abr_for_notification,attempt=attempt+1)
-        
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                if error_trace: 
+                    traceback_text = ''.join(traceback.format_tb(exc_traceback))
+                    self.bot_notify_normal(traceback_text)
+                
+                tb_entry = traceback.extract_tb(exc_traceback)[-1]
+                fname = tb_entry.filename
+                line_number = tb_entry.lineno
+                print(f"Error occurred at line {line_number} in {fname}")
+                time.sleep(7)
+                self.bot_notify_normal(f"Error occurred at line {line_number} in {fname}")
+                self.bot_notify_normal(f'{start_abr_for_notification} ERROR {e}\nAttempt {attempt + 1}')
+                self.run_function_with_exception(func, start_abr_for_notification, attempt=attempt + 1)
+                
+    
         self.bot_notify_normal(f'{start_abr_for_notification} RESTART')
-
 
