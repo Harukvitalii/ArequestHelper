@@ -39,7 +39,6 @@ class AREQUEST_MANAGER:
     
     
     async def get_json_patch(self,client: aiohttp.ClientSession, url: str,data, proxy,force_json = False) -> dict:
-        data = json.dumps(data) if data != None else None
         if proxy == None: 
             async with client.request('patch', url, data = data, ssl=False) as response:
                 return await self.errors_catcher(response, force_json)
